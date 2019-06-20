@@ -2,21 +2,10 @@
 
 @section('content')
 
-    @if(Session::has('deleted_user'))
 
-        <p class="bg-danger">{{session('deleted_user')}}</p>
+    @if(Session::has('userFlash'))
 
-        @endif
-
-    @if(Session::has('updated_user'))
-
-        <p class="bg-success">{{session('updated_user')}}</p>
-
-    @endif
-
-    @if(Session::has('created_user'))
-
-        <p class="bg-info">{{session('created_user')}}</p>
+        <p class="{{session('classFlash')}}">{{session('userFlash')}}</p>
 
     @endif
 
