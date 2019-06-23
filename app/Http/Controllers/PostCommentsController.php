@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class PostCommentsController extends Controller
 {
@@ -16,6 +19,11 @@ class PostCommentsController extends Controller
     public function index()
     {
         //
+
+        $comments = Comment::all();
+
+
+        return view('admin/comments/index', compact('comments'));
     }
 
     /**
@@ -37,6 +45,25 @@ class PostCommentsController extends Controller
     public function store(Request $request)
     {
         //
+
+        $user = Auth::user();
+
+        $data = [
+            'post_id' => $request->post_id,
+            'author'=>$user->name,
+            'email'=>$user->email,
+            'photo'=>$user->photo->path,
+            'body'=>$request->body
+        ];
+
+
+
+        Comment::create($data);
+
+        Session::flash('commentFlash', 'Your comment has been submitted and is awaiting moderation.');
+        Session::flash('classFlash', 'bg-success');
+
+        return redirect()->back();
     }
 
     /**
@@ -71,6 +98,12 @@ class PostCommentsController extends Controller
     public function update(Request $request, $id)
     {
         //
+        Comment::findOrFail($id)->update($request->all());
+
+        Session::flash('commentFlash', 'Comment approval status updated.');
+        Session::flash('classFlash', 'bg-info');
+
+        return redirect()->back();
     }
 
     /**
@@ -82,5 +115,11 @@ class PostCommentsController extends Controller
     public function destroy($id)
     {
         //
+        Comment::findOrFail($id)->delete();
+
+        Session::flash('commentFlash', 'Comment deleted.');
+        Session::flash('classFlash', 'bg-danger');
+
+        return redirect()->back();
     }
 }
